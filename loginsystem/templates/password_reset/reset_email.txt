@@ -1,0 +1,15 @@
+{% autoescape off %}
+Bonjour,
+
+Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte pour cette adresse email. Pour lancer le processus de réinitialisation de mot de passe pour votre compte, cliquez sur le lien ci-dessous.
+
+{{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}
+
+Ce lien ne peut être utilisé qu'une seule fois. Si vous devez réinitialiser votre mot de passe à nouveau, veuillez visiter et demander une autre réinitialisation {{ protocol }}://{{domain}}.
+
+Si vous n'avez pas effectué cette demande, vous pouvez simplement ignorer cet e-mail.
+
+Sincèrement,
+L'équipe EMSI
+
+{% endautoescape %}

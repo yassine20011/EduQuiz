@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% load static %}
+{% block additionalcss %}
+<link rel="stylesheet" href="{% static 'stylesheet.css' %}">
+{% endblock %}
+
+{% block body %}
+<div class="container p-5">
+
+    <h1 class="text-center">Security</h1>
+    <br>
+
+    <div class="mb-3">
+        <ul>
+            {% for object in ip_adresse %}
+            <li>Last login at: {{ object.date }}</li>
+            <li>IP address: {{ object.ip_address }}</li>
+            <li>device_name: {{ object.device_name }}</li>
+            <li>Geo location: {{ object.geoip }}</li>
+
+            <hr />
+            {% empty %}
+            <li>No objects yet.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+</div>
+
+{% endblock %}
