@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 
 CSRF_TRUSTED_ORIGINS = ['https://*.ngrok.io']
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['139.144.77.143', '127.0.0.1', 'localhost', 'https://*.ngrok.io']
 
 # Application definition
 
@@ -166,3 +166,4 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_USE_TLS = True
 # EMAIL_PORT = '2525'
 # EMAIL_USE_SSL = False
+
