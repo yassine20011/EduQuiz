@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 
 CSRF_TRUSTED_ORIGINS = ['https://*.ngrok.io']
-ALLOWED_HOSTS = ['139.144.77.143', '127.0.0.1', 'localhost', 'https://*.ngrok.io']
+ALLOWED_HOSTS = ['172.105.79.205', '127.0.0.1', 'localhost', 'https://*.ngrok.io']
 
 # Application definition
 
