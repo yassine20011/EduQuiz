@@ -1,20 +1,6 @@
 {% extends 'base.html' %} {% load crispy_forms_tags %}
 
-<!-- <div class="container py-5">
-    <form method="POST" enctype="multipart/form-data">
-        <div class="mb-3">
-            {% csrf_token %}
-            {{register_form | crispy }}
-        </div>
-        <input type="submit" class="btn btn-primary"></input>
-    </form>
-    {% if messages %}
-    {% for message in messages %}
-    <span{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</span>
-    {% endfor %}
-{% endif %}
-</div>
- -->
+
 
 {% block content %}
 <section class="bg-gray-50 dark:bg-gray-900">

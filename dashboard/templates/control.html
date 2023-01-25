@@ -5,5 +5,13 @@
 {% load static %}
 
 {% block content %}
-<div id="fb-editor"></div>
+
+
+{% if user.is_staff %}
+
+
+{% else %}
+
+{% endif %}
+
 {% endblock %}

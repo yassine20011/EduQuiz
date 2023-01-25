@@ -1,0 +1,69 @@
+{% extends 'dashboard.html' %}
+
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block title %} - Create Question{% endblock %}
+
+{% block content %}
+
+{% if user.is_staff %}
+<section class="bg-white dark:bg-gray-900 left">
+
+    <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Add Question to {{ quiz.title }}</h2>
+
+
+    <button type="button" hx-get="{% url 'question_form'%}" hx-target="#questionforms" hx-swap="beforeend"
+        class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 my-2">
+        Add Question
+    </button>
+</section>
+
+<div hx-target="this" hx-swap="outerHTML">
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+    
+    
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 bg-gray-50 dark:bg-gray-800">
+                            Question
+                        </th>
+        
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                        <th scope="row"
+                            class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800">
+                            <div id="questionforms" class="grid grid-flow-row auto-rows-max">
+        
+                            </div>
+                        </th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    
+        <div class="flex justify-end">
+            <button type="submit"
+                class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 my-2" hx-post=".">
+                Save
+            </button>
+        </div>
+    
+    </form>
+</div>
+
+
+
+
+{% else %}
+
+{% endif %}
+
+{% endblock %}

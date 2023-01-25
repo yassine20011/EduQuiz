@@ -15,12 +15,7 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
-class Quiz(models.Model):
-    question = models.CharField(max_length=150, null=True)
-    a = models.BooleanField(default=False)
-    b = models.BooleanField(default=False)
-    c = models.BooleanField(default=False)
-    d = models.BooleanField(default=False)
+
     
 
 class DataRelatedToUser(models.Model):
@@ -33,3 +28,30 @@ class DataRelatedToUser(models.Model):
     
     def __str__(self):
         return f'{self.ip_address}'
+
+
+class Quiz(models.Model):
+    profile = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    title = models.CharField(max_length=255, unique=True, null=True)
+    start_at = models.DateTimeField(null=True)
+    end_at = models.DateTimeField()
+    upload_quiz = ContentTypeRestrictedFileField(max_upload_size=10485760, null=True, verbose_name="", blank= True, content_types=['image/csv', 'image/xlsx'])
+    
+    def __str__(self):
+        return self.title
+
+class Question(models.Model):
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, null=True)
+    question = models.CharField(max_length=500, null=True)
+    
+    
+    def __str__(self):
+        return self.question
+
+class Answer(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, null=True)
+    answer = models.CharField(max_length=255, null=True)
+    is_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.answer

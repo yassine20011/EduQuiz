@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-4#3^q%84n^zqdyt0hufir#998a)-vj89)-o&t1q&$!&gd=axji'
+load_dotenv()
+
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -39,10 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'loginsystem',
-    'dashboard', 
-    'crispy_forms', # for tailwind
-    'crispy_tailwind', # for tailwind
-    'compressor', # for tailwind
+    'dashboard',
+    'crispy_forms',  # for tailwind
+    'crispy_tailwind',  # for tailwind
+    'compressor',  # for tailwind
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
@@ -57,15 +61,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'dashboard.middleware.storeip.SaveIpAddressMiddleware'
- ]
+    # 'dashboard.middleware.storeip.SaveIpAddressMiddleware'
+]
 
 ROOT_URLCONF = 'university.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR),'templates'],
+        'DIRS': [os.path.join(BASE_DIR), 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,6 +81,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'university.wsgi.application'
 
@@ -139,9 +144,9 @@ COMPRESS_ROOT = BASE_DIR / 'static'
 COMPRESS_ENABLED = True
 
 STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',
-                        'django.contrib.staticfiles.finders.FileSystemFinder',
-                        'django.contrib.staticfiles.finders.AppDirectoriesFinder'
-)
+                       'django.contrib.staticfiles.finders.FileSystemFinder',
+                       'django.contrib.staticfiles.finders.AppDirectoriesFinder'
+                       )
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -153,14 +158,11 @@ LOGOUT_REDIRECT_URL = '/'
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-#EMAIL_HOST = 'smtp.mailtrap.io'
-#EMAIL_PORT = '<your-server-port>'
-#EMAIL_HOST_USER = 'b59dc31a1209a0'
-#EMAIL_HOST_PASSWORD = '6db0d46d0fe8cb'
-#EMAIL_USE_TLS = True
-#EMAIL_PORT = '2525'
-#EMAIL_USE_SSL = False
-
-
-
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.mailtrap.io'
+# EMAIL_PORT = '<your-server-port>'
+# EMAIL_HOST_USER = 'b59dc31a1209a0'
+# EMAIL_HOST_PASSWORD = '6db0d46d0fe8cb'
+# EMAIL_USE_TLS = True
+# EMAIL_PORT = '2525'
+# EMAIL_USE_SSL = False
