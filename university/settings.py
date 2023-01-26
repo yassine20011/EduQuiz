@@ -28,10 +28,11 @@ load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 CSRF_TRUSTED_ORIGINS = ['https://*.ngrok.io']
-ALLOWED_HOSTS = ['172.105.79.205', '127.0.0.1', 'localhost', 'https://*.ngrok.io', 'http://eduquiz.yassineamjad.me/']
+
+ALLOWED_HOSTS = ['172.105.79.205', '127.0.0.1', 'localhost', 'https://*.ngrok.io', 'eduquiz.yassineamjad.me']
 
 # Application definition
 
