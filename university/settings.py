@@ -155,8 +155,7 @@ STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGOUT_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
-
+LOGIN_REDIRECT_URL = '/dashboard'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
