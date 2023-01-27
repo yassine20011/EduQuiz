@@ -157,13 +157,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/dashboard'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.mailtrap.io'
-# EMAIL_PORT = '<your-server-port>'
-# EMAIL_HOST_USER = 'b59dc31a1209a0'
-# EMAIL_HOST_PASSWORD = '6db0d46d0fe8cb'
-# EMAIL_USE_TLS = True
-# EMAIL_PORT = '2525'
-# EMAIL_USE_SSL = False
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER =  'no.reply.eduquiz@gmail.com'
+EMAIL_HOST_PASSWORD = 'bkkzhuokwcvjjvhw'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 
