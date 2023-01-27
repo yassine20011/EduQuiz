@@ -1,5 +1,5 @@
 {% autoescape off %}
-Bonjour,
+Bonjour {{ user.get_full_name|default:user.username }},
 
 Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte pour cette adresse email. Pour lancer le processus de réinitialisation de mot de passe pour votre compte, cliquez sur le lien ci-dessous.
 
