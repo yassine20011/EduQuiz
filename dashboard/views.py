@@ -10,6 +10,7 @@ from .models import Quiz, Question, Answer
 import json
 from django.shortcuts import get_object_or_404
 import pandas as pd
+from django.utils import timezone
 
 def dashboard(request):
     return render(request, 'dashboard.html',)
@@ -38,39 +39,50 @@ def control(request):
     return render(request, 'control.html')
 
 
-def create_quiz(request):  # sourcery skip: extract-method
-    
+def create_quiz(request):
+
     quiz_form = MadeQuizForm(request.POST or None, request.FILES or None)
     quizzes = Quiz.objects.all()
-    
-    
+
     if request.method == 'POST':
+        # this is the form that is submitted
         quiz_form = MadeQuizForm(request.POST, request.FILES)
-        if quiz_form.is_valid():
+        
+        if quiz_form.is_valid(): # check if the form is valid
             
+            # calulate the time limit using start and end time
+            dt = quiz_form.cleaned_data['end_at'] - quiz_form.cleaned_data['start_at']
+            
+            # convert the time to minutes
+            dt = dt.total_seconds() / 60          
+            
+            # commit = False means that the form is not saved yet or there is some null values
             quiz = quiz_form.save(commit=False)
-            quiz.upload_quiz = request.FILES['upload_quiz']
+            # get the file from the form
+            quiz.upload_quiz = request.FILES['upload_quiz'] 
             quiz.profile = request.user
+            quiz.time_limit = dt
             quiz.save()
             
+            # get the title of the quiz
             quiz = quiz_form.cleaned_data['title']
             quiz = Quiz.objects.get(title=quiz)
-            
-            
+
+            # read the file and convert it to a list of dictionaries
             if quiz.upload_quiz.name.endswith('.xlsx'):
-                df = pd.read_excel(quiz.upload_quiz , engine='openpyxl')
+                df = pd.read_excel(quiz.upload_quiz, engine='openpyxl')
             elif quiz.upload_quiz.name.endswith('.csv'):
                 df = pd.read_csv(quiz.upload_quiz)
-                
+
             try:
                 list_of_dict = df.to_dict('records')
             except UnboundLocalError:
                 messages.error(request, "Please upload a csv or xlsx file")
                 return redirect('create_quiz')
-            
-            
+
+            # create questions and answers
             for item in list_of_dict:
-                for key ,value in item.items():
+                for key, value in item.items():
                     if key == 'question':
                         question = Question.objects.filter(quiz=quiz)
                         question = question.create(question=value, quiz=quiz)
@@ -78,19 +90,16 @@ def create_quiz(request):  # sourcery skip: extract-method
                         true = '-v' in str(value)
                         value = str(value).replace('-v', '')
                         answer = Answer.objects.filter(question=question)
-                        answer.create(answer=value, question=question, is_correct=true)
-            
-            
+                        answer.create(
+                            answer=value, question=question, is_correct=true)
+
             messages.success(request, "Quiz created successfully")
             return redirect('create_quiz')
-        
-        
-        
+
         else:
             messages.error(request, "The title is already taken")
 
     return render(request, 'create_quiz.html', {'quiz_form': quiz_form, 'quizzes': quizzes})
-
 
 
 def delete_quiz(request, quiz_title):
@@ -125,10 +134,17 @@ def create_question_form(request):
     context = {"form": form}
     return render(request, 'question_form.html', context)
 
+
 def view_quiz(request, quiz_title):
     quiz = Quiz.objects.get(title=quiz_title)
     questions = Question.objects.filter(quiz=quiz)
     return render(request, 'quiz_preview.html', {'quiz': quiz, 'questions': questions})
+
+
+def available_quizzes(request):
+    quizzes = Quiz.objects.all()
+    
+    return render(request, 'available_quiz.html', {'quizzes': quizzes})
 
 
 def settings(request):
@@ -158,4 +174,3 @@ def logout_request(request):
 
 
 # if len(request.FILES) != 0:
-                

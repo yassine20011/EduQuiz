@@ -16,6 +16,7 @@ urlpatterns = [
     path('account/question_form/', login_required(views.create_question_form), name='question_form'),
     path('account/quiz_preview/<str:quiz_title>/', login_required(views.view_quiz), name='quiz_preview'),
     path('account/delete_quiz/<str:quiz_title>/', login_required(views.delete_quiz), name='delete_quiz'),
+    path('account/available_quizzes/', login_required(views.available_quizzes), name='available_quizzes'),
     path('account/profile/', login_required(views.profile), name='profile'),
     path('account/security/', login_required(SecurityQuery.as_view()), name='security'),
     path('account/settings/', login_required(auth_views.PasswordChangeView.as_view(template_name='settings.html', success_url=reverse_lazy('password_change_done'))), name='settings'),
