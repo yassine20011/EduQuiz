@@ -35,6 +35,8 @@ class Quiz(models.Model):
     title = models.CharField(max_length=255, unique=True, null=True)
     start_at = models.DateTimeField(null=True)
     end_at = models.DateTimeField()
+    time_limit = models.IntegerField(null=True)
+    is_available = models.BooleanField(default=False)
     upload_quiz = ContentTypeRestrictedFileField(max_upload_size=10485760, null=True, verbose_name="", blank= True, content_types=['image/csv', 'image/xlsx'])
     
     def __str__(self):
