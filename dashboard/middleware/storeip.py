@@ -83,7 +83,7 @@ class IsQuizAvailableMiddleware(MiddlewareMixin):
                     end = quiz.end_at.strftime('%Y-%m-%d %H:%M:%S')
                     quiz.is_available = start <= now <= end
                     quiz.save()
-                if not request.session.get('quiz_available'):
+                if not request.session.get('quiz_available') and any(quiz.is_available for quiz in quizzes):
                     request.session['quiz_available'] = True
                     messages.info(request, 'Quiz is available',
                                   extra_tags='quiz_available')

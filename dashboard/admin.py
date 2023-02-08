@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Profile, DataRelatedToUser, Quiz, Question, Answer
+from .models import Profile, DataRelatedToUser, Quiz, Question, Answer, StudentAnswer, QuizTaker
 
 
 admin.site.register(Profile)
@@ -28,4 +28,13 @@ class QuestionAdmin(admin.ModelAdmin):
     inlines = [AnswerInline]
     
 admin.site.register(Question, QuestionAdmin)
+
+
+    
+class QuizTakerAdmin(admin.ModelAdmin):
+    list_display = ('student',  'has_passed_quiz')
+    list_filter = ('has_passed_quiz', 'student')
+    search_fields = ('student__username', 'quiz__title')
+    
+admin.site.register(QuizTaker, QuizTakerAdmin)
 

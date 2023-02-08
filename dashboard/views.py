@@ -1,16 +1,18 @@
 from django.contrib.auth.forms import PasswordResetForm
 from statistics import mode
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, HttpResponse, HttpResponseRedirect
 from django.contrib import messages
-from .forms import UpdateUserForm, UpdateAvatarBio, MadeQuizForm, MadeQuestionForm, MadeAnswerForm, QuestionFormSet
-from .models import DataRelatedToUser, Profile
+from .forms import UpdateUserForm, UpdateAvatarBio, MadeQuizForm, MadeQuestionForm
+from .models import DataRelatedToUser, Profile, Quiz, Question, Answer, StudentAnswer, QuizTaker
 from django.contrib.auth import logout
 from django.views.generic.list import ListView
-from .models import Quiz, Question, Answer
-import json
-from django.shortcuts import get_object_or_404
 import pandas as pd
 from django.utils import timezone
+from django.contrib.auth.decorators import user_passes_test
+import json
+from collections import defaultdict
+from django.contrib.auth.models import Group
+
 
 def dashboard(request):
     return render(request, 'dashboard.html',)
@@ -39,6 +41,7 @@ def control(request):
     return render(request, 'control.html')
 
 
+@user_passes_test(lambda u: u.is_staff)
 def create_quiz(request):
 
     quiz_form = MadeQuizForm(request.POST or None, request.FILES or None)
@@ -47,23 +50,24 @@ def create_quiz(request):
     if request.method == 'POST':
         # this is the form that is submitted
         quiz_form = MadeQuizForm(request.POST, request.FILES)
-        
-        if quiz_form.is_valid(): # check if the form is valid
-            
+
+        if quiz_form.is_valid():  # check if the form is valid
+
             # calulate the time limit using start and end time
-            dt = quiz_form.cleaned_data['end_at'] - quiz_form.cleaned_data['start_at']
-            
+            dt = quiz_form.cleaned_data['end_at'] - \
+                quiz_form.cleaned_data['start_at']
+
             # convert the time to minutes
-            dt = dt.total_seconds() / 60          
-            
+            dt = dt.total_seconds() / 60
+
             # commit = False means that the form is not saved yet or there is some null values
             quiz = quiz_form.save(commit=False)
             # get the file from the form
-            quiz.upload_quiz = request.FILES['upload_quiz'] 
+            quiz.upload_quiz = request.FILES['upload_quiz']
             quiz.profile = request.user
             quiz.time_limit = dt
             quiz.save()
-            
+
             # get the title of the quiz
             quiz = quiz_form.cleaned_data['title']
             quiz = Quiz.objects.get(title=quiz)
@@ -83,7 +87,7 @@ def create_quiz(request):
             # create questions and answers
             for item in list_of_dict:
                 for key, value in item.items():
-                    if key == 'question':
+                    if key.lower() == 'question':
                         question = Question.objects.filter(quiz=quiz)
                         question = question.create(question=value, quiz=quiz)
                     if key in ['a', 'b', 'c', 'd']:
@@ -102,6 +106,7 @@ def create_quiz(request):
     return render(request, 'create_quiz.html', {'quiz_form': quiz_form, 'quizzes': quizzes})
 
 
+@user_passes_test(lambda u: u.is_staff)
 def delete_quiz(request, quiz_title):
     quiz = Quiz.objects.get(title=quiz_title)
     quiz.delete()
@@ -135,6 +140,7 @@ def create_question_form(request):
     return render(request, 'question_form.html', context)
 
 
+@user_passes_test(lambda u: u.is_staff)
 def view_quiz(request, quiz_title):
     quiz = Quiz.objects.get(title=quiz_title)
     questions = Question.objects.filter(quiz=quiz)
@@ -143,8 +149,45 @@ def view_quiz(request, quiz_title):
 
 def available_quizzes(request):
     quizzes = Quiz.objects.all()
-    
+
     return render(request, 'available_quiz.html', {'quizzes': quizzes})
+
+
+def take_quiz(request, quiz_title):  # sourcery skip: remove-redundant-pass
+    quiz = Quiz.objects.get(title=quiz_title)
+    
+   
+    
+    
+    if request.method == 'POST':
+        # It's a dictionary of the form data.
+        ajaxData = {
+            key: value
+            for key, value in request.POST.lists()
+            if key != 'csrfmiddlewaretoken'
+        }
+
+        list_of_dict = []
+        for i in range(len(ajaxData) // 2):
+            new_dict = {'question_id': ajaxData[f'values[{int(i)}][question_id]'],
+                        'answer_id': ajaxData[f'values[{int(i)}][answer_id][]']}
+            list_of_dict.append(new_dict)
+  
+        
+        for item in list_of_dict:
+            question = Question.objects.get(id=int(item['question_id'][0]))
+            studentAnswer = StudentAnswer.objects.create(profile=request.user, quiz=quiz, question=question)
+            studentAnswer.answer.add(*item['answer_id'])
+            studentAnswer.save()
+        
+       
+        QuizTaker.objects.create(student=request.user, has_passed_quiz=True, quiz=quiz)
+        return HttpResponseRedirect('/')
+     
+    quiz = Quiz.objects.get(title=quiz_title)
+    end = quiz.end_at.strftime("%Y-%m-%d %H:%M:%S")
+    random_questions = Question.objects.filter(quiz=quiz).order_by('?')
+    return render(request, 'take_quiz.html', {'quiz': quiz, 'questions': random_questions, 'end': end})
 
 
 def settings(request):
@@ -171,6 +214,3 @@ class SecurityQuery(ListView):
 def logout_request(request):
     logout(request)
     return redirect("home")
-
-
-# if len(request.FILES) != 0:

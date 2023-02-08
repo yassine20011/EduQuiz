@@ -9,7 +9,7 @@
 {% if user.is_staff %}
 
 <section class="bg-white dark:bg-gray-900 left">
-    <div class="max-w-2xl px-4 py-8 mx-auto lg:py-16 my-4 dark:bg-gray-900">
+    <div class="full-w px-4 py-8 mx-auto lg:py-16 my-4 dark:bg-gray-900">
         <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">This is the preview of your quiz {{ quiz.title }}</h2>
         <p class="mb-2 text-gray-600 dark:text-gray-400"> In this panel you can preview the quiz you have created.</p>
 
@@ -48,7 +48,7 @@
                                 {% for question in questions %}
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900 dark:text-gray-400">{{ question.question }}</div>
+                                        <div class="text-sm text-gray-900 dark:text-gray-400">{{ question }}</div>
                                     </td>
                                     {% for answer in question.answer_set.all %}
                                     <td class="px-6 py-4 whitespace-nowrap">
