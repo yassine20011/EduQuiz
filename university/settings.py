@@ -28,7 +28,7 @@ load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 
 ALLOWED_HOSTS = ['172.105.79.205', '127.0.0.1', 'localhost', 'https://*.ngrok.io', 'eduquiz.yassineamjad.me', '35f4-196-74-112-174.ngrok.io' ]
