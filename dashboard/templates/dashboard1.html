@@ -1,0 +1,69 @@
+{% extends "dashboard.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+    {% if user.is_staff %}
+        <div class="container mx-auto">
+            <nav class="flex mb-4" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="{% url 'dashboard1' %}"
+                           class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                            <svg class="w-4 h-4 mr-2"
+                                 fill="currentColor"
+                                 viewBox="0 0 20 20"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                            </svg>
+                            Dashboard
+                        </a>
+                    </li>
+                </ol>
+            </nav>
+            <h2 class="text-4xl font-extrabold dark:text-white">Usage</h2>
+            <p class="my-4 text-lg text-gray-500">
+                EduQuiz is a web application that allows teachers to create quizzes and students to take them. It is currently in development.
+            </p>
+            <p class="mb-4 text-lg font-normal text-gray-500 dark:text-gray-400">
+                <strong class="font-semibold text-gray-900 dark:text-white">Create quizzes : </strong>Teachers can use EduQuiz to create quizzes for their students. They can create multiple-choice questions, short answer questions, or even essay questions <span class="text-gray-900 dark:text-white">(Max 1000 caracters).</span> The platform will allow them to set time limits for the quizzes, as well as assign a point value to each question.
+            </p>
+
+            <p class="mb-4 text-lg font-normal text-gray-500 dark:text-gray-400">
+                <strong class="font-semibold text-gray-900 dark:text-white">Take quizzes : </strong>Students can use EduQuiz to take quizzes created by their teachers. They can take the quizzes at the time that their teachers assign, and they can see their scores after the approval of the teacher.
+            </p>
+
+            <p class="mb-4 text-lg font-normal text-gray-500 dark:text-gray-400">
+                <strong class="font-semibold text-gray-900 dark:text-white">Analyze results : </strong>Once the quiz time limit has ended, the teacher can access the results on EduQuiz. There are two types of results available: standard and detailed. The standard results will show the overall score and basic statistics, such as the number of correct answers and the percentage of students who passed or failed. The detailed results will provide more in-depth analytics, such as the time each student took to answer each question, the average time per question, and the percentage of students who answered each question correctly. This information can help the teacher to identify specific areas where their students may need additional support and tailor their teaching accordingly.
+            </p>
+
+            <h2 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">Some requeriments to create a quiz:</h2>
+            <ul class="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                <li>Each quiz must have a <strong class="font-semibold text-gray-900 dark:text-white">unique</strong> title.</li>
+                <li>You need to create a excel file as the <a href="{% static 'img/example.png' %}" class="text-blue-600 dark:text-blue-500 hover:underline">example</a>.</li>
+                <li>Each true answer must add a <strong class="font-semibold text-gray-900 dark:text-white">-v</strong> at the end of the answer.</li>
+                <li>You can have multiple true answers.</li>
+                <li>The cell <strong class="font-semibold text-gray-900 dark:text-white">A1</strong> The name must be <strong class="font-semibold text-gray-900 dark:text-white">Question</strong>.</li>
+                <li>The cell <strong class="font-semibold text-gray-900 dark:text-white">B1, C1, D1, E1</strong> The name must be <strong class="font-semibold text-gray-900 dark:text-white">a, b, c, d</strong>.</li>
+            </ul>
+            <a href="#"
+               class="inline-flex items-center text-lg text-blue-600 dark:text-blue-500 hover:underline md:mt-4">
+                Create a quiz
+                <svg class="w-6 h-6 ml-1"
+                     fill="currentColor"
+                     viewBox="0 0 20 20"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+            </a>
+            
+            <video class="w-auto h-auto border border-gray-200 rounded-lg dark:border-gray-700 md:mt-4"
+                   controls loop muted>
+                <source src="{% static 'img/test.mkv' %}" type="video/mp4" allowfullscreen />
+                    Your browser does not support the video tag.
+            </video>
+  
+
+        </div>
+    {% else %}
+    {% endif %}
+{% endblock content %}

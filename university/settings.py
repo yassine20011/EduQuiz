@@ -30,13 +30,14 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-CSRF_TRUSTED_ORIGINS = ['https://*.ngrok.io']
 
-ALLOWED_HOSTS = ['172.105.79.205', '127.0.0.1', 'localhost', 'https://*.ngrok.io', 'eduquiz.yassineamjad.me']
+ALLOWED_HOSTS = ['172.105.79.205', '127.0.0.1', 'localhost', 'https://*.ngrok.io', 'eduquiz.yassineamjad.me', '35f4-196-74-112-174.ngrok.io' ]
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,7 +49,11 @@ INSTALLED_APPS = [
     'crispy_forms',  # for tailwind
     'crispy_tailwind',  # for tailwind
     'compressor',  # for tailwind
+    'rest_framework',
+    'corsheaders',
 ]
+
+ASGI_APPLICATION = 'university.asgi.application'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 
@@ -57,13 +62,14 @@ CRISPY_TEMPLATE_PACK = "tailwind"
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'dashboard.middleware.storeip.SaveIpAddressMiddleware',
-    'dashboard.middleware.storeip.IsQuizAvailableMiddleware',
+    #'dashboard.middleware.storeip.SaveIpAddressMiddleware',
+    'dashboard.middleware.middleware.IsQuizAvailableMiddleware',
 ]
 
 ROOT_URLCONF = 'university.urls'
@@ -71,7 +77,7 @@ ROOT_URLCONF = 'university.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR), 'templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -134,9 +140,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
-STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+
+
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
@@ -168,4 +176,11 @@ EMAIL_HOST_USER =  'no.reply.eduquiz@gmail.com'
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
+
+
+
+
+# add static files to development mode is the debug false
+
+
 

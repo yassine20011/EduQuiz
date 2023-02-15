@@ -1,19 +1,37 @@
+from django.template import RequestContext
 from django.contrib.auth.forms import PasswordResetForm
 from statistics import mode
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, HttpResponse, HttpResponseRedirect
 from django.contrib import messages
-from .forms import UpdateUserForm, UpdateAvatarBio, MadeQuizForm, MadeQuestionForm, MadeAnswerForm, QuestionFormSet
-from .models import DataRelatedToUser, Profile
+from .forms import UpdateUserForm, UpdateAvatarBio, MadeQuizForm, MadeQuestionForm
+from .models import DataRelatedToUser, Profile, Quiz, Question, Answer, StudentAnswer, QuizTaker
 from django.contrib.auth import logout
 from django.views.generic.list import ListView
-from .models import Quiz, Question, Answer
-import json
-from django.shortcuts import get_object_or_404
 import pandas as pd
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.models import Group
 from django.utils import timezone
+import pytz
+from datetime import datetime
+from django.http import JsonResponse
+from django.db import IntegrityError
+import maxminddb
+import os
+
+
+
+
 
 def dashboard(request):
+
     return render(request, 'dashboard.html',)
+
+
+def dashboard1(request):
+    return render(request, 'dashboard1.html')
+
+
+
 
 
 # Profile view
@@ -35,10 +53,7 @@ def profile(request):
     return render(request, 'profile.html', {'user_form': user_form, 'profile_form': profile_form})
 
 
-def control(request):
-    return render(request, 'control.html')
-
-
+@user_passes_test(lambda u: u.is_staff)
 def create_quiz(request):
 
     quiz_form = MadeQuizForm(request.POST or None, request.FILES or None)
@@ -47,23 +62,24 @@ def create_quiz(request):
     if request.method == 'POST':
         # this is the form that is submitted
         quiz_form = MadeQuizForm(request.POST, request.FILES)
-        
-        if quiz_form.is_valid(): # check if the form is valid
-            
+
+        if quiz_form.is_valid():  # check if the form is valid
+
             # calulate the time limit using start and end time
-            dt = quiz_form.cleaned_data['end_at'] - quiz_form.cleaned_data['start_at']
-            
+            dt = quiz_form.cleaned_data['end_at'] - \
+                quiz_form.cleaned_data['start_at']
+
             # convert the time to minutes
-            dt = dt.total_seconds() / 60          
-            
+            dt = dt.total_seconds() / 60
+
             # commit = False means that the form is not saved yet or there is some null values
             quiz = quiz_form.save(commit=False)
             # get the file from the form
-            quiz.upload_quiz = request.FILES['upload_quiz'] 
+            quiz.upload_quiz = request.FILES['upload_quiz']
             quiz.profile = request.user
             quiz.time_limit = dt
             quiz.save()
-            
+
             # get the title of the quiz
             quiz = quiz_form.cleaned_data['title']
             quiz = Quiz.objects.get(title=quiz)
@@ -83,7 +99,7 @@ def create_quiz(request):
             # create questions and answers
             for item in list_of_dict:
                 for key, value in item.items():
-                    if key == 'question':
+                    if key.lower() == 'question':
                         question = Question.objects.filter(quiz=quiz)
                         question = question.create(question=value, quiz=quiz)
                     if key in ['a', 'b', 'c', 'd']:
@@ -102,39 +118,14 @@ def create_quiz(request):
     return render(request, 'create_quiz.html', {'quiz_form': quiz_form, 'quizzes': quizzes})
 
 
+@user_passes_test(lambda u: u.is_staff)
 def delete_quiz(request, quiz_title):
     quiz = Quiz.objects.get(title=quiz_title)
     quiz.delete()
     return redirect('create_quiz')
 
 
-def create_questions(request, quiz_title):
-    quiz = Quiz.objects.get(title=quiz_title)
-    question = Question.objects.filter(quiz=quiz)
-    form = MadeQuestionForm(request.POST or None)
-
-    if request.method == 'POST':
-        if not form.is_valid():
-            return render(request, 'question_form.html', {'form': form})
-
-        form = form.save(commit=False)
-        form.quiz = quiz
-        form.save()
-        HttpResponse('success')
-
-    return render(request, 'create_question.html', {
-        "form": form,
-        "quiz": quiz,
-        "question": question,
-    })
-
-
-def create_question_form(request):
-    form = MadeQuestionForm()
-    context = {"form": form}
-    return render(request, 'question_form.html', context)
-
-
+@user_passes_test(lambda u: u.is_staff)
 def view_quiz(request, quiz_title):
     quiz = Quiz.objects.get(title=quiz_title)
     questions = Question.objects.filter(quiz=quiz)
@@ -143,8 +134,118 @@ def view_quiz(request, quiz_title):
 
 def available_quizzes(request):
     quizzes = Quiz.objects.all()
-    
     return render(request, 'available_quiz.html', {'quizzes': quizzes})
+
+
+def results_with_details(request, quiz_title):
+    quiz = Quiz.objects.get(title=quiz_title)
+    student_answers = StudentAnswer.objects.filter(quiz=quiz)
+    data = []
+    for student_answer in student_answers:
+        student_full_name = student_answer.profile.get_full_name()
+        student_question = student_answer.question
+        student_answer_list = [str(answer) for answer in student_answer.answer.all()]
+        student_grade = QuizTaker.objects.get(student=student_answer.profile, quiz=quiz).score
+        data.append({
+            "Full name": student_full_name,
+            "Question": student_question,
+            "Student Answers": student_answer_list,
+            "Grade": student_grade
+        })
+    df = pd.DataFrame(data)
+    df.style.set_caption(f'{quiz_title} results') \
+    .set_table_styles([{'selector': 'th',
+                          'props': [('background-color', '#F0F0F0'), ('font-size', '12pt'), ('text-align', 'center'), ('font-weight', 'bold'), ('border', '1px solid black')]},
+                         {'selector': 'td',
+                          'props': [('background-color', '#D0D0D0')]}])
+    df.to_excel(f'media/{quiz_title} results_with_details.xlsx', index=False)
+    return redirect(f"/media/{quiz_title}.xlsx")
+
+
+
+def standard_results(request, quiz_title):
+    quiz = Quiz.objects.get(title=quiz_title)
+    quiz_takers = QuizTaker.objects.filter(quiz=quiz)
+    data = [
+        {
+            "Full name": quiz_taker.student.get_full_name(),
+            "Grade": quiz_taker.score,
+        }
+        for quiz_taker in quiz_takers
+    ]
+    df = pd.DataFrame(data)
+    df.style.set_caption('Example XLSX') \
+    .set_table_styles([{'selector': 'th',
+                          'props': [('background-color', '#F0F0F0'), ('font-size', '12pt'), ('text-align', 'center'), ('font-weight', 'bold'), ('border', '1px solid black')]},
+                         {'selector': 'td',
+                          'props': [('background-color', '#D0D0D0')]}])
+    df.to_excel(f'media/{quiz_title} standard_results.xlsx', index=False)
+    return redirect(f'/media/{quiz_title} standard_results.xlsx')
+    
+
+
+
+def take_quiz(request, quiz_title):  # sourcery skip: remove-redundant-pass
+    quiz = Quiz.objects.get(title=quiz_title)
+
+
+    if QuizTaker.objects.filter(student=request.user, quiz=quiz).exists():
+        return JsonResponse({'error': 'You have already taken this quiz'})
+    elif quiz.end_at < timezone.now():
+        return JsonResponse({'error': 'The quiz has ended'})
+
+    if request.method == 'POST':
+        # It's a dictionary of the form data.
+        ajaxData = {
+            key: value
+            for key, value in request.POST.lists()
+            if key != 'csrfmiddlewaretoken'
+        }
+
+        list_of_dict = []
+        for i in range(len(ajaxData) // 2):
+            new_dict = {'question_id': ajaxData[f'values[{int(i)}][question_id]'],
+                        'answer_id': ajaxData[f'values[{int(i)}][answer_id][]']}
+            list_of_dict.append(new_dict)
+
+        for item in list_of_dict:
+            question = Question.objects.get(id=int(item['question_id'][0]))
+            studentAnswer = StudentAnswer.objects.create(
+                profile=request.user, quiz=quiz, question=question)
+            studentAnswer.answer.add(*item['answer_id'])
+            studentAnswer.save()
+
+        count = 0
+        student_answers = StudentAnswer.objects.filter(quiz=quiz)
+        for student_answer in student_answers:
+            # Get the question that was answered
+            question = student_answer.question
+            # Get the answers for the question
+            answers = student_answer.answer.all()
+            # Loop through the answers
+            for answer in answers:
+                question = Question.objects.get(id=question.id)
+                true_answer = Answer.objects.filter(
+                    question=question, is_correct=True)
+                true_answers_list = list(true_answer)
+                if answer in true_answers_list:
+                    count += 1
+
+
+
+        try:
+            QuizTaker.objects.create(
+                student=request.user, has_passed_quiz=True, quiz=quiz, score=count)
+        except IntegrityError:
+            return JsonResponse({'error': 'You have already taken this quiz'})
+        return redirect('dashboard')
+
+    quiz = Quiz.objects.get(title=quiz_title)
+    end = quiz.end_at.strftime("%Y-%m-%d %H:%M:%S")
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    random_questions = Question.objects.filter(quiz=quiz).order_by('?')
+    return render(request, 'take_quiz.html', {'quiz': quiz, 'questions': random_questions, 'end': end, 'now': now})
+
 
 
 def settings(request):
@@ -173,4 +274,9 @@ def logout_request(request):
     return redirect("home")
 
 
-# if len(request.FILES) != 0:
+def handler404(request, exception=None):
+    return render(request, "404.html", status=404)
+
+
+def handler500(request, exception=None):
+    return render(request, "500.html", status=500)

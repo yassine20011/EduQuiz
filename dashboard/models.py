@@ -57,3 +57,29 @@ class Answer(models.Model):
 
     def __str__(self):
         return self.answer
+
+
+    
+class StudentAnswer(models.Model):
+    
+    profile = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, null=True)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, null=True)
+    answer = models.ManyToManyField(Answer, blank=True, related_name='student_answer')
+    
+    
+    def __str__(self):
+        return f'{self.profile.username} {self.quiz.title}'
+    
+    
+class QuizTaker(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, null=True)
+    has_passed_quiz = models.BooleanField(default=False)
+    score = models.IntegerField(null=True)
+    
+    class Meta:
+        unique_together = ['student', 'quiz']
+    
+    def __str__(self):
+        return f'{self.student.username} {self.quiz.title}'
