@@ -59,10 +59,6 @@ class Answer(models.Model):
         return self.answer
 
 
-
-
-
-
     
 class StudentAnswer(models.Model):
     
@@ -73,13 +69,17 @@ class StudentAnswer(models.Model):
     
     
     def __str__(self):
-        return f'{self.profile.username} {self.quiz.title} {self.question.question}'
+        return f'{self.profile.username} {self.quiz.title}'
     
     
 class QuizTaker(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, null=True)
     has_passed_quiz = models.BooleanField(default=False)
+    score = models.IntegerField(null=True)
+    
+    class Meta:
+        unique_together = ['student', 'quiz']
     
     def __str__(self):
-        return self.student.username
+        return f'{self.student.username} {self.quiz.title}'

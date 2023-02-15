@@ -38,3 +38,10 @@ class QuizTakerAdmin(admin.ModelAdmin):
     
 admin.site.register(QuizTaker, QuizTakerAdmin)
 
+
+class StudentAnswerAdmin(admin.ModelAdmin):
+    list_display = ('quiz', 'profile')
+    list_filter = ('quiz', 'profile')
+    search_fields = ('quiz__title', 'profile__user__username')
+    
+admin.site.register(StudentAnswer, StudentAnswerAdmin)

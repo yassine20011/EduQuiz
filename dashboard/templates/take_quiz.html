@@ -4,45 +4,50 @@
 
 <style>
     #deleteModal:not(.hidden) {
-        background-color: rgba(0,0,0,0.5);
+        background-color: rgba(0, 0, 0, 0.5);
     }
 </style>
 <div class="container mx-auto">
 
     <div class="w-full p-6">
 
-        <div  class="flex justify-center items-center text-2xl font-bold text-gray-900 dark:text-white">
+        <div class="flex justify-center items-center text-2xl font-bold text-gray-900 dark:text-white">
             <span id="timer">00:00:00</span>
         </div>
-      
+
         <div class="inline-flex rounded-md shadow-sm" role="group">
-            <button type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white" id="previous">
+            <button type="button"
+                class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white"
+                id="previous">
                 Previous question
             </button>
-            <button type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-md hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white" id="nxtbtn">
+            <button type="button"
+                class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-md hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white"
+                id="nxtbtn">
                 Next question
             </button>
-          </div>
-          
-          
-  
-     
+        </div>
+
+
+
+
 
         {% for question in questions %}
-        <form method="post" class="mt-8" enctype="multipart/form-data">
+        <form method="post" class="mt-8" enctype="multipart/form-data" id="quizForm">
             {% csrf_token %}
             <div>
                 <h3 class="mb-4 font-semibold text-gray-900 dark:text-white mt-8 md:my-8">
                     {{ forloop.counter }} - {{ question }}
                 </h3>
-                <ul
-                    class="items-center w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg sm:flex dark:bg-gray-700 dark:border-gray-600 dark:text-white" id="question-{{ forloop.counter }}" value="{{ question.id }}">
+                <ul class="items-center w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg sm:flex dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    id="question-{{ forloop.counter }}" value="{{ question.id }}">
                     {% for answer in question.answer_set.all %}
 
                     <li class="w-full border-b border-gray-200 sm:border-b-0 sm:border-r dark:border-gray-600">
                         <div class="flex items-center pl-3">
                             <input id="vue-checkbox-list" type="checkbox" value="{{ answer.id }}"
-                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" question_id="{{ question.id }}">
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                                question_id="{{ question.id }}">
                             <label for="vue-checkbox-list"
                                 class="w-full py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{ answer }}</label>
                         </div>
@@ -53,60 +58,61 @@
                 {% endfor %}
 
             </div>
-                
 
-                <div class="flex justify-end mt-6">
-                    <!-- Modal toggle -->
-                    <div class="flex justify-center m-5">
-                        <button id="deleteButton" data-modal-toggle="deleteModal"
-                            class="block text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                            type="button">
-                            Submit
-                        </button>
-                    </div>
-    
-                    <!-- Main modal -->
-                    <div id="deleteModal" tabindex="-1" aria-hidden="true"
-                        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
-                        <div class="relative p-4 w-full max-w-md h-full md:h-auto">
-                            <!-- Modal content -->
-                            <div class="relative p-4 text-center bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
-                                <button type="button"
-                                    class="text-gray-400 absolute top-2.5 right-2.5 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                                    data-modal-toggle="deleteModal">
-                                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span class="sr-only">Close modal</span>
-                                </button>
-                                <svg class="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto" aria-hidden="true"
-                                    fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+
+            <div class="flex justify-end mt-6">
+                <!-- Modal toggle -->
+                <div class="flex justify-center m-5">
+                    <button id="deleteButton" data-modal-toggle="deleteModal"
+                        class="block text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                        type="button">
+                        Submit
+                    </button>
+                </div>
+
+                <!-- Main modal -->
+                <div id="deleteModal" tabindex="-1" aria-hidden="true"
+                    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
+                    <div class="relative p-4 w-full max-w-md h-full md:h-auto">
+                        <!-- Modal content -->
+                        <div class="relative p-4 text-center bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+                            <button type="button"
+                                class="text-gray-400 absolute top-2.5 right-2.5 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                data-modal-toggle="deleteModal">
+                                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd"
-                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                         clip-rule="evenodd"></path>
                                 </svg>
-                                <p class="mb-4 text-gray-500 dark:text-gray-300">Are you sure you want to submit your answers? You can't undo this action afterwards.
-                                </p>
-                                <div class="flex justify-center items-center space-x-4">
-                                    <button data-modal-toggle="deleteModal" type="button"
-                                        class="py-2 px-3 text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
-                                        No, cancel
-                                    </button>
-                                    <button type="submit"
-                                        class="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900"
-                                        id="submit">
-                                        Yes, I'm sure
-                                    </button>
-                                </div>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                            <svg class="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto" aria-hidden="true"
+                                fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <p class="mb-4 text-gray-500 dark:text-gray-300">Are you sure you want to submit your
+                                answers? You can't undo this action afterwards.
+                            </p>
+                            <div class="flex justify-center items-center space-x-4">
+                                <button data-modal-toggle="deleteModal" type="button"
+                                    class="py-2 px-3 text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                                    No, cancel
+                                </button>
+                                <button type="button"
+                                    class="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900"    onclick=""
+                                    id="button">
+                                    Yes, I'm sure
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-    
-             
+            </div>
+
+
 
         </form>
     </div>
@@ -116,32 +122,32 @@
 
 
 
-{% endblock %} 
+{% endblock %}
 
 {% block script %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
-<script> 
+<script>
 
     // displayin the questions one by one
     {% for question in questions %}
-        $("#question-{{ forloop.counter }}").css("display", "none");
+    $("#question-{{ forloop.counter }}").css("display", "none");
     {% endfor %}
     $("#question-1").css("display", "block");
-    
+
     // displaying the next question
     var counter = 1;
     $("#nxtbtn").click(function () {
         counter++;
-        if (counter > {{ questions|length }}) {
-            counter = {{ questions|length }};
+        if (counter > {{ questions | length }}) {
+        counter = {{ questions | length }};
         }
-        $("#question-" + counter).css("display", "block");
-        $("#question-" + (counter - 1)).css("display", "none");
+    $("#question-" + counter).css("display", "block");
+    $("#question-" + (counter - 1)).css("display", "none");
     });
-    
-    
+
+
     // displaying the previous question
     $("#previous").click(function () {
         counter--;
@@ -151,11 +157,9 @@
         $("#question-" + counter).css("display", "block");
         $("#question-" + (counter + 1)).css("display", "none");
     });
-    
+
     // get the value as int of the checkbox
-    var values = [
-       
-    ]
+    var values = []
     $("input[type=checkbox]").click(function () {
         var question_id = $(this).attr("question_id");
         var answer_id = $(this).val();
@@ -177,47 +181,85 @@
     });
 
 
-    // submit the form
-    $("#submit").click(function () {
+
+        
+
+
+    $("#button").click(function (e) {
+        e.preventDefault();
+        var data = {
+          values: values,
+          csrfmiddlewaretoken: "{{ csrf_token }}",
+        };
         $.ajax({
-            url: "{% url 'take_quiz' quiz.title %}",
-            type: "POST",
-            data: {
-                values: values,
-                csrfmiddlewaretoken: "{{ csrf_token }}",
-            },
-            success: function (response) {
-                console.log(response.data);
-            },
+          type: "POST",
+          url: "{% url 'take_quiz' quiz.title %}",
+          data: data,
+          success: function (response) {
+            window.location.href = "{% url 'thank_you'  %}";
+          },
         });
     });
-
-    </script>
+      
 
     // timer script
-    <script>
-        var endTime = "{{ end }}";
-        var endTime = new Date(endTime).getTime();
-        var now = new Date().getTime();
-        var timeleft = endTime - now;
-        var x = setInterval(function () {
-            var now = new Date().getTime();
-            var timeleft = endTime - now;
-            var days = Math.floor(timeleft / (1000 * 60 * 60 * 24));
-            var hours = Math.floor(
-                (timeleft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-            );
-            var minutes = Math.floor((timeleft % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((timeleft % (1000 * 60)) / 1000);
-            document.getElementById("timer").innerHTML =
-                days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
-            if (timeleft < 0) {
-                clearInterval(x);
-                document.getElementById("timer").innerHTML = "EXPIRED";
-                $("#submit").click();
+
+    var end_time = "{{ end }}";
+    var now = "{{ now }}";
+    var end_time = new Date(end_time).getTime();
+    var now = new Date(now).getTime();
+    var timeleft = end_time - now;
+
+    var downloadTimer = setInterval(function () {
+        timeleft -= 1000; // 1000ms = 1s
+        var seconds = Math.floor((timeleft / 1000) % 60);
+        var minutes = Math.floor((timeleft / (1000 * 60)) % 60);
+        document.getElementById("timer").innerHTML = minutes + "m " + seconds + "s ";
+        if (timeleft <= 0) {
+            clearInterval(downloadTimer);
+            document.getElementById("timer").innerHTML = "Finished";
+            $("#button").click();
+        }
+    }, 1000);
+
+
+        // disable right click
+        document.onkeydown = function(e) {
+            if(event.keyCode == 123) {
+               return false;
             }
-        }, 1000);
-    </script>
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
+               return false;
+            }
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
+               return false;
+            }
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
+               return false;
+            }
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
+               return false;
+            }
+          }
+         
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+          });
+    // disable the selecting text
+    $(document).ready(function () {
+        $("body").on("cut copy paste", function (e) {
+            e.preventDefault();
+        });
+    });
+    
+
+
+</script>
+
+
+
+
+
 
 
 {% endblock script %}
