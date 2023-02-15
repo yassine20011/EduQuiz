@@ -43,7 +43,6 @@ MarkupSafe==2.1.2
 maxminddb==2.2.0
 maxminddb-geolite2==2018.703
 multidict==6.0.2
-mysqlclient==2.1.0
 numpy==1.24.1
 openpyxl==3.0.10
 pandas==1.5.3
