@@ -507,8 +507,10 @@
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; // e.g. "America/New_York"
     document.cookie = "timezone=" + timezone;
 
+    protocol = window.location.protocol === "https:" ? "wss" : "ws";
+
     const socket = new WebSocket(
-      "ws://" + window.location.host + "/ws/notifications/"
+      protocol + window.location.host + "/ws/notifications/"
     );
 
     socket.onmessage = function (event) {
