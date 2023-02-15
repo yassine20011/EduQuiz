@@ -510,7 +510,7 @@
     protocol = window.location.protocol === "https:" ? "wss" : "ws";
 
     const socket = new WebSocket(
-      protocol + window.location.host + "/ws/notifications/"
+      `${protocol}://` + window.location.host + "/ws/notifications/"
     );
 
     socket.onmessage = function (event) {
