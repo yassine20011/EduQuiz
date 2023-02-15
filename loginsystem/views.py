@@ -36,7 +36,7 @@ def register_user(request):
 
 def login(request):
 	if request.user.is_authenticated:
-		return redirect('dashboard')
+		return redirect('dashboard1')
 	if request.method == "POST":
 		form = AuthenticationForm(request, data=request.POST)
 		if form.is_valid():
@@ -45,7 +45,7 @@ def login(request):
 			user = authenticate(username=username, password=password)
 			if user is not None:
 				login_auth(request, user)
-				return redirect('dashboard')
+				return redirect('dashboard1')
 			else:
 				messages.error(request, 'The username and/or password you specified are not correct.')
 		else:
