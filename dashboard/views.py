@@ -243,7 +243,7 @@ def standard_results(request, quiz_title):
     df.to_excel(f'media/{quiz_title} standard_results.xlsx', index=False)
     return redirect(f'/media/{quiz_title} standard_results.xlsx')
 
-
+@user_passes_test(lambda user: Profile.objects.get(user=user).isTeacher == False and not user.is_staff and not user.is_superuser)
 def take_quiz(request, quiz_title):  # sourcery skip: remove-redundant-pass
     quiz = Quiz.objects.get(title=quiz_title)
 
