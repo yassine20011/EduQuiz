@@ -84,3 +84,42 @@ class IsQuizAvailableMiddleware(BaseMiddleware):
         except pytz.UnknownTimeZoneError or ValueError as e:
             logging.error(e)
         return self.get_response(request)
+
+
+
+
+from django.core.exceptions import PermissionDenied
+from django.contrib import admin
+from dashboard.admin import QuizAdmin
+from django.contrib.auth.models import Permission
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group, User
+from django.db.utils import OperationalError
+
+class AdminOnlyMiddleware(BaseMiddleware):
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+        super().__init__(get_response)
+
+
+    
+    def __call__(self, request):
+        Teachers_Permissions = Group.objects.get(name="Teacher'sPermissions")
+        teachers = Profile.objects.filter(isTeacher=True)
+        
+        for teacher in teachers:
+            teacher.user.groups.add(Teachers_Permissions)
+            teacher.user.save()
+        
+        staffs_permissions = Group.objects.get(name="Staff'sPermissions")
+        user = User.objects.filter(username=request.user.username, is_staff=True)
+        try:
+            staffs = Profile.objects.filter(user=user[0], isTeacher=False)
+            for staff in staffs:
+                staff.user.groups.add(staffs_permissions)
+                staff.user.save()
+        except IndexError or OperationalError:
+            pass
+            
+        return self.get_response(request)

@@ -1,0 +1,80 @@
+{% extends "dashboard.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+    <div class="max-w-2xl px-4 py-8 mx-auto lg:py-16 my-4">
+        <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Groups</h2>
+        <p class="text-gray-600 dark:text-gray-400">Join a group to start passing the quiz that you have been assigned.</p>
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg my-4">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">Name</th>
+                        <th scope="col" class="px-6 py-3">Join</th>
+                    </tr>
+                </thead>
+                <tbody id="groups">
+                    {% for group in groups %}
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <th scope="row"
+                                class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+                                <img class="w-10 h-10 rounded-full"
+                                     src=""
+                                     alt="{{ group.name }}"
+                                     id="{{ group.name }}"
+                                     width="40"
+                                     height="40"/>
+                                {% if group.name|length > 10 %}
+                                    <div class="pl-3">
+                                        <div class="text-base font-semibold">{{ group.name|slice:":10" }}...</div>
+                                    </div>
+                                {% else %}
+                                    <div class="pl-3">
+                                        <div class="text-base font-semibold">{{ group.name }}</div>
+                                    </div>
+                                {% endif %}
+                            </th>
+                            <td class="px-6 py-4">
+                                <a href="{% url 'join_group' group.name %}"
+                                   class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-blue-600 border border-transparent rounded-lg active:bg-blue-600 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue"> Join </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div id="toast-bottom-right"
+             class="absolute bottom-5 right-5 flex p-4 mb-4 text-sm text-yellow-800 border border-yellow-300 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300 dark:border-yellow-800 hidden"
+             role="alert">
+        </div>
+    {% endblock content %}
+    {% block script %}
+        <script>
+    {% if messages %}
+    {% for message in messages %}
+      let toast = document.getElementById("toast-bottom-right");
+      toast.classList.remove("hidden");
+      toast.innerHTML = `<svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+      <span class="sr-only">Info</span>
+      <div>
+        <span class="font-medium">Info alert!</span> {{ message }}
+      </div>
+    </div>
+  `;
+      setTimeout(function () {
+          toast.classList.add("hidden");
+      }, 3000);
+
+      {% endfor %}
+      {% endif %}
+
+      function createIMG(word) {
+          let myArray = word.split(" ");
+          let p0 = myArray[0].charAt(0);
+          let p1 = myArray[1].charAt(0);
+          let img = document.getElementById(word);
+          img.src = `https://dummyimage.com/100x100/1C64F2/fff&text=${p0 + p1}`;
+      }
+      {% for group in groups %} createIMG("{{ group.name }}");{% endfor %}
+        </script>
+    {% endblock script %}

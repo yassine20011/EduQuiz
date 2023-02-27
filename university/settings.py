@@ -14,7 +14,6 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,10 +27,10 @@ load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 
-ALLOWED_HOSTS = ['172.105.79.205', '127.0.0.1', 'localhost', 'https://*.ngrok.io', 'eduquiz.yassineamjad.me', '35f4-196-74-112-174.ngrok.io' ]
+ALLOWED_HOSTS = ['172.105.79.205', '127.0.0.1', 'localhost', '192.168.100.7', 'eduquiz.yassineamjad.me', 'd8ba-41-141-102-142.ngrok.io' ]
 
 # Application definition
 
@@ -51,6 +50,7 @@ INSTALLED_APPS = [
     'compressor',  # for tailwind
     'rest_framework',
     'corsheaders',
+    'staff',
 ]
 
 ASGI_APPLICATION = 'university.asgi.application'
@@ -70,6 +70,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #'dashboard.middleware.storeip.SaveIpAddressMiddleware',
     'dashboard.middleware.middleware.IsQuizAvailableMiddleware',
+    'dashboard.middleware.middleware.AdminOnlyMiddleware',
 ]
 
 ROOT_URLCONF = 'university.urls'
@@ -134,7 +135,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

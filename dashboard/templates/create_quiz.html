@@ -228,26 +228,81 @@
                     </table>
                 </div>
             </section>
-        
-    </div>
     {% endif %}
 {% endblock content %}
+{% block contentForSmallScreen %}
+  <section class="bg-white dark:bg-gray-900 left dark:text-gray-300">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+                <h2 class="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                    Create a new quiz
+                </h2>
+                <form class="mt-4 space-y-4 lg:mt-5 md:space-y-5"
+                      method="post"
+                      enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ quiz_form | crispy }}
+                    <button type="submit"
+                            class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+                        Create  Quiz
+                    </button>
+                </form>
+
+            <!-- Recent Quizizz -->
+            <div class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700 mt-8 md:my-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white">
+                        Recent Quizizz
+                    </h5>
+               </div>
+               <div class="flow-root">
+                    <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+                        {% for quiz in quizzes %}
+                        <li class="pt-3 pb-0 sm:pt-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                        {{ quiz.title | title }}
+                                    </p>
+                                    <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                                        {{ quiz.start_at|date:"d M Y" }}, {{ quiz.start_at|date:"H:i" }}, {{ quiz.start_at|date:"T" }}
+                                    </p>
+                                </div>
+                                <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                    {% if quiz.is_available %}
+                                    <span class="text-green-500">Available</span>
+                                    {% else %}
+                                    <span class="text-red-500">Not Available</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+               </div>
+            </div>
+        </div>
+    </section>
+{% endblock contentForSmallScreen %}
 {% block script %}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-    {% for quiz in quizzes %}
-    document.addEventListener("DOMContentLoaded", function (event) {
-        document.getElementById('deleteButton{{ forloop.counter }}').click()
-        document.getElementById('deleteButton{{ forloop.counter }}').click()
-    })
-    {% endfor %}
+
+    $(".pointer-events-none").remove()
+
+    if(window.innerWidth > 768) {
+        {% for quiz in quizzes %}
+        document.addEventListener("DOMContentLoaded", function (event) {
+            document.getElementById('deleteButton{{ forloop.counter }}').click()
+            document.getElementById('deleteButton{{ forloop.counter }}').click()
+        })
+        {% endfor %}
+    }
 
 
     const start_at = document.getElementById('id_start_at')
     const end_at = document.getElementById('id_end_at')
 
-    start_at.type = 'datetime-local'
-    end_at.type = 'datetime-local'
+
 
 
 
